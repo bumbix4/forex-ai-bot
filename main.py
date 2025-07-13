@@ -7,9 +7,7 @@ telegram_token = os.environ["TELEGRAM_BOT_TOKEN"]
 chat_id = os.environ["TELEGRAM_CHAT_ID"]
 
 def get_analysis():
-    client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-    
-    response = client.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are a professional Forex analyst."},
@@ -20,7 +18,8 @@ Respond with: trend, key levels, setup idea (entry, SL, TP), and confidence leve
 """}
         ]
     )
-    return response.choices[0].message.content
+    return response["choices"][0]["message"]["content"]
+
 
 
 def send_to_telegram(text):
