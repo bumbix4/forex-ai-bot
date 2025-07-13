@@ -7,19 +7,21 @@ telegram_token = os.environ["TELEGRAM_BOT_TOKEN"]
 chat_id = os.environ["TELEGRAM_CHAT_ID"]
 
 def get_analysis():
-    prompt = f"""
-Act as a world-class Forex analyst. Provide an intraday analysis for XAU/USD.
-Use current technical indicators (assume RSI ~68, price ~2370, bullish pressure).
-Respond with: trend, key levels, setup idea (entry, SL, TP), and confidence level.
-"""
-    response = openai.ChatCompletion.create(
+    client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are a professional Forex analyst."},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": """
+Act as a world-class Forex analyst. Provide an intraday analysis for XAU/USD.
+Use current technical indicators (assume RSI ~68, price ~2370, bullish pressure).
+Respond with: trend, key levels, setup idea (entry, SL, TP), and confidence level.
+"""}
         ]
     )
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
+
 
 def send_to_telegram(text):
     url = f"https://api.telegram.org/bot{telegram_token}/sendMessage"
